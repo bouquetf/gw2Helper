@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GW2 Events</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript">
+        var lang = "&lang=fr";
+        var base_url = "https://api.guildwars2.com/v1/";
+        var worldsjson = "world_names.json";
+        var mapsjson = "map_names.json";
+        var eventsjson = "events.json";
+        var eventsnamesjson = "event_names.json";
+        var eventNames = {};
+    </script>
+</head>
+<body>
+
+<label>
+    Choisir un monde
+    <select id="world">
+
+    </select>
+</label>
+
+<label>
+    Choisir une carte
+    <select id="maps">
+    </select>
+</label>
+
+<button value="refresh" onclick="refreshEvents()">Refresh</button>
+
+<table id="events">
+
+</table>
+
+<script>
+    var eventsnames = base_url + eventsnamesjson + "?" + lang;
+    var worlds = base_url + worldsjson + "?" + lang;
+
+    var worldId;
+
+    $.getJSON(eventsnames, function (nameList) {
+        $.each(nameList, function (line, name) {
+            eventNames[name["id"]] = name["name"];
+        })
+    });
+
+    var $worldDiv = $('#world');
+    $.getJSON(worlds, function(worldList) {
+        $worldDiv.append(new Option("Choisir un monde", '0'));
+        $.each(worldList, function(line, world) {
+
+            $worldDiv.append(new Option(world['name'], world['id']));
+        })
+    });
+    var eventsDiv = $('#events');
+
+    $worldDiv.change( function() {
+        $('#maps').empty();
+
+        eventsDiv.empty();
+        worldId = $worldDiv.val();
+        if (worldId != 0) {
+            var maps = base_url + mapsjson + "?world_id=" + worldId + lang;
+
+            $.getJSON(maps, function(mapList) {
+                $('#maps').append(new Option("Choisir une map", '0'));
+                $.each(mapList, function(line, map) {
+                    $('#maps').append(new Option(map['name'], map['id']));
+                })
+            })
+        }
+    });
+
+    $("#maps").change( function() {
+        refreshEvents();
+    });
+
+    function refreshEvents() {
+        var mapId = $("#maps").val();
+        var events = base_url + eventsjson + "?" + "world_id=" + worldId + "&map_id="+mapId + lang;
+
+        eventsDiv.empty();
+
+        $.getJSON(events, function(eventList) {
+            var cmp = 0;
+            $.each(eventList["events"], function(line, event) {
+                var state = event["state"];
+                if ($.inArray(state, ['Preparation', 'Warmup', 'Active']) > -1) {
+                    var color;
+                    if (cmp%2 == 0) {
+                        color = "lightblue";
+                    } else {
+                        color = "lightpink";
+                    }
+                    $('#events').append("<tr style='background-color: "+color+"'><td>"+eventNames[event["event_id"]]+"</td><td>"+ state+"</td></tr>");
+                    cmp+=1;
+                }
+            })
+        })
+    }
+
+</script>
+</body>
+</html>
