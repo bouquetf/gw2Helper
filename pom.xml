@@ -8,4 +8,17 @@
     <artifactId>next</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
+
+    <developers>
+        <developer>
+            <name>Frédéric Bouquet</name>
+            <email>bouquet.frederic@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>next.jaalon.org</url>
+        <developerConnection>scm:git:git@github.com:bouquetf/gw2Helper.git</developerConnection>
+    </scm>
+
 </project>
