@@ -67,7 +67,7 @@
     });
 
     $.getJSON(worlds, function(worldList) {
-        worldDiv.append(new Option("Choisir un monde", '0'));
+        worldDiv.append(new Option(" ", '0'));
         $.each(worldList, function(line, world) {
 
             worldDiv.append(new Option(world['name'], world['id']));
@@ -83,7 +83,7 @@
             var maps = base_url + mapsjson + "?world_id=" + worldId + lang;
 
             $.getJSON(maps, function(mapList) {
-                mapsDiv.append(new Option("Choisir une map", '0'));
+                mapsDiv.append(new Option(" ", '0'));
                 $.each(mapList, function(line, map) {
                     mapsDiv.append(new Option(map['name'], map['id']));
                 })
@@ -118,8 +118,6 @@
             })
         })
     }
-
-
 
 </script>
 </body>
