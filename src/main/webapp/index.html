@@ -39,67 +39,64 @@
 </table>
 
 <script>
-
-    var eventsnames = base_url + eventsnamesjson + "?" + lang;
+    var eventsNames = base_url + eventsnamesjson + "?" + lang;
     var worlds = base_url + worldsjson + "?" + lang;
 
     var worldId;
 
-    var chest = $("#chest");
+    var worldDiv = $('#world');
+    var eventsDiv = $('#events');
+    var mapsDiv = $("#maps");
+    var chestDiv = $("#chest");
 
-    chest.click( function() {
-        console.log(chestStatus);
-        chest.empty();
+    chestDiv.click( function() {
+        chestDiv.empty();
         if (chestStatus == "off") {
             chestStatus = "on";
-            console.log(chest);
-            chest.append('<img src="images/chest_on.jpg" />');
+            chestDiv.append('<img src="images/chest_on.jpg" />');
         } else {
             chestStatus = "off";
-            chest.append('<img src="images/chest_off.png" />');
+            chestDiv.append('<img src="images/chest_off.png" />');
         }
     });
 
-
-    $.getJSON(eventsnames, function (nameList) {
+    $.getJSON(eventsNames, function (nameList) {
         $.each(nameList, function (line, name) {
             eventNames[name["id"]] = name["name"];
         })
     });
 
-    var $worldDiv = $('#world');
     $.getJSON(worlds, function(worldList) {
-        $worldDiv.append(new Option("Choisir un monde", '0'));
+        worldDiv.append(new Option("Choisir un monde", '0'));
         $.each(worldList, function(line, world) {
 
-            $worldDiv.append(new Option(world['name'], world['id']));
+            worldDiv.append(new Option(world['name'], world['id']));
         })
     });
-    var eventsDiv = $('#events');
 
-    $worldDiv.change( function() {
-        $('#maps').empty();
+    worldDiv.change( function() {
+        mapsDiv.empty();
 
         eventsDiv.empty();
-        worldId = $worldDiv.val();
+        worldId = worldDiv.val();
         if (worldId != 0) {
             var maps = base_url + mapsjson + "?world_id=" + worldId + lang;
 
             $.getJSON(maps, function(mapList) {
-                $('#maps').append(new Option("Choisir une map", '0'));
+                mapsDiv.append(new Option("Choisir une map", '0'));
                 $.each(mapList, function(line, map) {
-                    $('#maps').append(new Option(map['name'], map['id']));
+                    mapsDiv.append(new Option(map['name'], map['id']));
                 })
             })
         }
     });
 
-    $("#maps").change( function() {
+    mapsDiv.change( function() {
         refreshEvents();
     });
 
     function refreshEvents() {
-        var mapId = $("#maps").val();
+        var mapId = mapsDiv.val();
         var events = base_url + eventsjson + "?" + "world_id=" + worldId + "&map_id="+mapId + lang;
 
         eventsDiv.empty();
