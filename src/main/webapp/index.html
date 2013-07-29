@@ -11,6 +11,7 @@
         var eventsjson = "events.json";
         var eventsnamesjson = "event_names.json";
         var eventNames = {};
+        var chestStatus = "off";
     </script>
 </head>
 <body>
@@ -22,23 +23,43 @@
     </select>
 </label>
 
+<span id="chest"><img src="images/chest_off.png" /></span>
+
 <label>
     Choisir une carte
     <select id="maps">
     </select>
 </label>
 
-<button value="refresh" onclick="refreshEvents()">Refresh</button>
+<button onclick="refreshEvents()">Refresh</button>
+
 
 <table id="events">
 
 </table>
 
 <script>
+
     var eventsnames = base_url + eventsnamesjson + "?" + lang;
     var worlds = base_url + worldsjson + "?" + lang;
 
     var worldId;
+
+    var chest = $("#chest");
+
+    chest.click( function() {
+        console.log(chestStatus);
+        chest.empty();
+        if (chestStatus == "off") {
+            chestStatus = "on";
+            console.log(chest);
+            chest.append('<img src="images/chest_on.jpg" />');
+        } else {
+            chestStatus = "off";
+            chest.append('<img src="images/chest_off.png" />');
+        }
+    });
+
 
     $.getJSON(eventsnames, function (nameList) {
         $.each(nameList, function (line, name) {
@@ -100,6 +121,8 @@
             })
         })
     }
+
+
 
 </script>
 </body>
