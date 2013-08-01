@@ -13,30 +13,39 @@
         var eventNames = {};
         var chestStatus = "off";
     </script>
+    <link rel="stylesheet" href="styles/main.css" type="text/css" />
 </head>
 <body>
 
-<label>
-    Choisir un monde
-    <select id="world">
+<div id="#head">
+    <img src="images/GW2_Logotype.jpg" alt="GW2 logo" height="100" width="719"/>
+</div>
 
-    </select>
-</label>
+<div id="content">
 
-<span id="chest"><img src="images/chest_off.png" /></span>
+    <label>
+        Choisir un monde
+        <select id="world">
 
-<label>
-    Choisir une carte
-    <select id="maps">
-    </select>
-</label>
+        </select>
+    </label>
 
-<button onclick="refreshEvents()">Refresh</button>
+    <span id="chest"><img src="images/chest_off.png" /></span>
+
+    <label>
+        Choisir une carte
+        <select id="maps">
+        </select>
+    </label>
+
+    <button onclick="refreshEvents()">Refresh</button>
 
 
-<table id="events">
+    <table id="events">
 
-</table>
+    </table>
+
+</div>
 
 <script>
     var eventsNames = base_url + eventsnamesjson + "?" + lang;
