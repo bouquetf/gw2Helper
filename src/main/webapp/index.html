@@ -24,7 +24,6 @@
 <body>
 
 <div class="container">
-
     <img src="images/GW2_Logotype.jpg" class="img-responsive" alt="Reponsive image">
 
     <ul class="nav nav-tabs">
@@ -44,7 +43,6 @@
                 <li>Carte avec le lieu de l'événement</li>
                 <li>Date indicative pour les prochains événements</li>
             </ul>
-
         </div>
 
         <div id="evenements" class="content tab-pane fade">
@@ -76,41 +74,49 @@
                     </table>
                 </div>
             </div>
-
         </div>
 
+        <div class="modal fade" id="tp_modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="eventLocation">Emplacement</h4>
+                    </div>
+                    <div class="modal-body">
+                        <img id="tp" src="images/GW2_Logo.jpg" height="400" width="500" />
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
     var eventsNames = base_url + eventsnamesjson + "?" + lang;
     var worlds = base_url + worldsjson + "?" + lang;
-
     var worldId;
-
+    var tabAccueil = $("#accueil_tab");
+    var tabEvenements = $("#evenements_tab");
     var worldDiv = $('#world');
     var eventsDiv = $('#events');
     var mapsDiv = $("#maps");
     var chestDiv = $("#chest");
 
-    $.getJSON(eventsNames, function (nameList) {
-        $.each(nameList, function (line, name) {
-            eventNames[name["id"]] = name["name"];
-        })
+    tabAccueil.find("a").click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
     });
 
-    $.getJSON(worlds, function(worldList) {
-        worldDiv.append(new Option(" ", '0'));
-        $.each(worldList, function(line, world) {
-
-            worldDiv.append(new Option(world['name'], world['id']));
-        })
+    tabEvenements.find("a").click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
     });
 
     worldDiv.change( function() {
         mapsDiv.empty();
-
         eventsDiv.empty();
+
         worldId = worldDiv.val();
         if (worldId != 0) {
             var maps = base_url + mapsjson + "?world_id=" + worldId + lang;
@@ -124,13 +130,16 @@
         }
     });
 
+    mapsDiv.change( function() {
+        refreshEvents();
+    });
+
 
     function refreshEvents() {
         var mapId = mapsDiv.val();
         var events = base_url + eventsjson + "?" + "world_id=" + worldId + "&map_id="+mapId + lang;
 
         eventsDiv.empty();
-
         $.getJSON(events, function(eventList) {
             var cmp = 0;
             $.each(eventList["events"], function(line, event) {
@@ -142,28 +151,44 @@
                     } else {
                         color = "lightpink";
                     }
-                    $('#events').append("<tr style='background-color: "+color+"'><td>"+eventNames[event["event_id"]]+"</td><td>"+ state+"</td></tr>");
+                    var event_id = event["event_id"];
+                    $('#events').append("<tr style='background-color: "+color+"'><td>" +
+                            "<a onclick='updatePicture(this.id)' data-toggle='modal'  href='#tp_modal' id='"+ event_id+"'>" +
+                            eventNames[event_id]+"</a></td><td>"+ state+"</td></tr>");
                     cmp+=1;
                 }
             })
         })
     }
 
-    $("#accueil_tab").find("a").click(function (e) {
-        e.preventDefault();
-        $(this).tab('show');
+    function updatePicture(id) {
+        $.ajax({
+            url:'tps/'+id+'.jpg',
+            type:'HEAD',
+            error: function() {
+                $('#eventLocation').text(eventNames[id]);
+                $('#tp').attr('src',"images/GW2_Logo.jpg");
+            },
+            success: function()
+            {
+                $('#eventLocation').text(eventNames[id]);
+                $('#tp').attr('src','tps/'+id+'.jpg');
+            }
+        });
+    }
+
+    $.getJSON(eventsNames, function (nameList) {
+        $.each(nameList, function (line, name) {
+            eventNames[name["id"]] = name["name"];
+        })
     });
 
-    $("#evenements_tab").find("a").click(function (e) {
-        e.preventDefault();
-        $(this).tab('show');
+    $.getJSON(worlds, function(worldList) {
+        worldDiv.append(new Option(" ", '0'));
+        $.each(worldList, function(line, world) {
+            worldDiv.append(new Option(world['name'], world['id']));
+        })
     });
-
-    mapsDiv.change( function() {
-        refreshEvents();
-    });
-
-
 </script>
 
 </body>
