@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>GW2 Events</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        var lang = "&lang=fr";
+        var base_url = "https://api.guildwars2.com/v1/";
+        var worldsjson = "world_names.json";
+        var mapsjson = "map_names.json";
+        var eventsjson = "events.json";
+        var eventsnamesjson = "event_names.json";
+        var eventNames = {};
+        var chestStatus = "off";
+    </script>
+</head>
+<body>
+
+<div class="container">
+
+    <img src="images/GW2_Logotype.jpg" class="img-responsive" alt="Reponsive image">
+
+    <ul class="nav nav-tabs">
+        <li id="accueil_tab" class="active"><a href="#accueil" data-toggle="tab">Accueil</a></li>
+        <li id="evenements_tab"><a href="#evenements" data-toggle="tab">Événements</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="accueil" class="tab-pane fade active in">
+            <p>Next vous permet de connaître les prochains évènements qui auront lieu dans la carte sur laquelle vous
+                jouez.</p>
+            <p>
+                A venir :
+            </p>
+            <ul>
+                <li>Liste des évènements à coffre actifs</li>
+                <li>Carte avec le lieu de l'événement</li>
+                <li>Date indicative pour les prochains événements</li>
+            </ul>
+
+        </div>
+
+        <div id="evenements" class="content tab-pane fade">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="input-group" >
+                        <label for="world"></label>
+                        <select id="world" class="form-control"></select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Serveur</button>
+                        </span>
+                    </div>
+                    <div class="input-group" >
+                        <label for="maps"></label>
+                        <select id="maps" class="form-control"></select>
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">&nbsp;&nbsp;Carte&nbsp;&nbsp;</button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <button class="btn btn-default btn-block btn-large" onclick="refreshEvents()">Refresh</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-9">
+                    <table class="table" id="events">
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var eventsNames = base_url + eventsnamesjson + "?" + lang;
+    var worlds = base_url + worldsjson + "?" + lang;
+
+    var worldId;
+
+    var worldDiv = $('#world');
+    var eventsDiv = $('#events');
+    var mapsDiv = $("#maps");
+    var chestDiv = $("#chest");
+
+    $.getJSON(eventsNames, function (nameList) {
+        $.each(nameList, function (line, name) {
+            eventNames[name["id"]] = name["name"];
+        })
+    });
+
+    $.getJSON(worlds, function(worldList) {
+        worldDiv.append(new Option(" ", '0'));
+        $.each(worldList, function(line, world) {
+
+            worldDiv.append(new Option(world['name'], world['id']));
+        })
+    });
+
+    worldDiv.change( function() {
+        mapsDiv.empty();
+
+        eventsDiv.empty();
+        worldId = worldDiv.val();
+        if (worldId != 0) {
+            var maps = base_url + mapsjson + "?world_id=" + worldId + lang;
+
+            $.getJSON(maps, function(mapList) {
+                mapsDiv.append(new Option(" ", '0'));
+                $.each(mapList, function(line, map) {
+                    mapsDiv.append(new Option(map['name'], map['id']));
+                })
+            })
+        }
+    });
+
+
+    function refreshEvents() {
+        var mapId = mapsDiv.val();
+        var events = base_url + eventsjson + "?" + "world_id=" + worldId + "&map_id="+mapId + lang;
+
+        eventsDiv.empty();
+
+        $.getJSON(events, function(eventList) {
+            var cmp = 0;
+            $.each(eventList["events"], function(line, event) {
+                var state = event["state"];
+                var color;
+                $('#events').append("<tr style='background-color: "+color+"'><td>"+event["event_id"]+"</td></td><td>"+eventNames[event["event_id"]]+"</td></tr>");
+                cmp+=1;
+            })
+        })
+    }
+
+    $("#accueil_tab").find("a").click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
+    $("#evenements_tab").find("a").click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
+    mapsDiv.change( function() {
+        refreshEvents();
+    });
+
+
+</script>
+
+</body>
+</html>
