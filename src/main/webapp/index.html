@@ -1,8 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <title>GW2 Events</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
+
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+
     <script type="text/javascript">
         var lang = "&lang=fr";
         var base_url = "https://api.guildwars2.com/v1/";
@@ -13,38 +20,66 @@
         var eventNames = {};
         var chestStatus = "off";
     </script>
-    <link rel="stylesheet" href="styles/main.css" type="text/css" />
 </head>
 <body>
 
-<div id="#head">
-    <img src="images/GW2_Logotype.jpg" alt="GW2 logo" height="100" width="719"/>
-</div>
+<div class="container">
 
-<div id="content">
+    <img src="images/GW2_Logotype.jpg" class="img-responsive" alt="Reponsive image">
 
-    <label>
-        Choisir un monde
-        <select id="world">
+    <ul class="nav nav-tabs">
+        <li id="accueil_tab" class="active"><a href="#accueil" data-toggle="tab">Accueil</a></li>
+        <li id="evenements_tab"><a href="#evenements" data-toggle="tab">Événements</a></li>
+    </ul>
 
-        </select>
-    </label>
+    <div class="tab-content">
+        <div id="accueil" class="tab-pane fade active in">
+            <p>Next vous permet de connaître les prochains évènements qui auront lieu dans la carte sur laquelle vous
+                jouez.</p>
+            <p>
+                A venir :
+            </p>
+            <ul>
+                <li>Liste des évènements à coffre actifs</li>
+                <li>Carte avec le lieu de l'événement</li>
+                <li>Date indicative pour les prochains événements</li>
+            </ul>
 
-    <span id="chest"><img src="images/chest_off.png" /></span>
+        </div>
 
-    <label>
-        Choisir une carte
-        <select id="maps">
-        </select>
-    </label>
+        <div id="evenements" class="content tab-pane fade">
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="input-group" >
+                        <label for="world"></label>
+                        <select id="world" class="form-control"></select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Serveur</button>
+                        </span>
+                    </div>
+                    <div class="input-group" >
+                        <label for="maps"></label>
+                        <select id="maps" class="form-control"></select>
+                          <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">&nbsp;&nbsp;Carte&nbsp;&nbsp;</button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <button class="btn btn-default btn-block btn-large" onclick="refreshEvents()">Refresh</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-9">
+                    <table class="table" id="events">
 
-    <button onclick="refreshEvents()">Refresh</button>
+                    </table>
+                </div>
+            </div>
 
+        </div>
 
-    <table id="events">
-
-    </table>
-
+    </div>
 </div>
 
 <script>
@@ -57,17 +92,6 @@
     var eventsDiv = $('#events');
     var mapsDiv = $("#maps");
     var chestDiv = $("#chest");
-
-    chestDiv.click( function() {
-        chestDiv.empty();
-        if (chestStatus == "off") {
-            chestStatus = "on";
-            chestDiv.append('<img src="images/chest_on.jpg" />');
-        } else {
-            chestStatus = "off";
-            chestDiv.append('<img src="images/chest_off.png" />');
-        }
-    });
 
     $.getJSON(eventsNames, function (nameList) {
         $.each(nameList, function (line, name) {
@@ -100,9 +124,6 @@
         }
     });
 
-    mapsDiv.change( function() {
-        refreshEvents();
-    });
 
     function refreshEvents() {
         var mapId = mapsDiv.val();
@@ -128,6 +149,22 @@
         })
     }
 
+    $("#accueil_tab").find("a").click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
+    $("#evenements_tab").find("a").click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
+    mapsDiv.change( function() {
+        refreshEvents();
+    });
+
+
 </script>
+
 </body>
 </html>
