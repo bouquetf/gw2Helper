@@ -29,23 +29,46 @@
     <ul class="nav nav-tabs">
         <li id="accueil_tab" class="active"><a href="#accueil" data-toggle="tab">Accueil</a></li>
         <li id="evenements_tab"><a href="#evenements" data-toggle="tab">Événements</a></li>
+        <li id="news_tab"><a href="#news" data-toggle="tab">News</a></li>
     </ul>
+
 
     <div class="tab-content">
         <div id="accueil" class="tab-pane fade active in">
-            <p>Next vous permet de connaître les prochains évènements qui auront lieu dans la carte sur laquelle vous
-                jouez.</p>
-            <p>
-                A venir :
-            </p>
-            <ul>
-                <li>Liste des évènements à coffre actifs</li>
-                <li>Carte avec le lieu de l'événement</li>
-                <li>Date indicative pour les prochains événements</li>
-            </ul>
+            <h3>Et si on farmait les événements ?</h3>
+            <div>
+                <div class="panel">
+                    <p>Next est un petit utilitaire qui permet de tout savoir sur les prochains événements
+                        qui auront lieu en jeu.</p>
+                    <p>
+                        A venir :
+                    </p>
+                    <ul>
+                        <li>Liste des évènements à coffre actifs</li>
+                        <li>Carte avec le lieu de l'événement</li>
+                        <li>Date indicative pour les prochains événements</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                <h4>Dernières news</h4>
+                <div class="panel">
+                    <div class="panel-heading">
+                        2013-08-02 ~~ <strong>Tout commence</strong>
+                    </div>
+                    <p>Profitons de ce début août pour mettre en ligne ce site utilitaire qui nous a été bien utile
+                        pour chasser les événements et finir la dernière histoire vivante. Les premières
+                        fonctionnalités permettent de chercher les événements qui correspondent à une zone donnée.</p>
+                    <p>Pour se faire, choisissez simplement le serveur sur lequel vous jouez et la carte qui vous
+                        intéresse. Les différents évènements actifs ou en cours de préparation s'afficheront alors.</p>
+                    <p>D'ici peu, cliquer sur un événement affichera une carte et le point de téléport le plus proche.</p>
+                </div>
+            </div>
         </div>
 
         <div id="evenements" class="content tab-pane fade">
+            <h3>Prochains événement sur ma carte</h3>
             <div class="row">
                 <div class="col-lg-9">
                     <div class="input-group" >
@@ -70,9 +93,23 @@
             <div class="row">
                 <div class="col-lg-9">
                     <table class="table" id="events">
-
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <div id="news" class="content tab-pane fade">
+            <h3>Quoi de neuf ?</h3>
+            <div class="panel">
+                <div class="panel-heading">
+                    2013-08-02 ~~ <strong>Tout commence</strong>
+                </div>
+                <p>Profitons de ce début août pour mettre en ligne ce site utilitaire qui nous a été bien utile
+                    pour chasser les événements et finir la dernière histoire vivante. Les premières
+                    fonctionnalités permettent de chercher les événements qui correspondent à une zone donnée.</p>
+                <p>Pour se faire, choisissez simplement le serveur sur lequel vous jouez et la carte qui vous
+                    intéresse. Les différents évènements actifs ou en cours de préparation s'afficheront alors.</p>
+                <p>D'ici peu, cliquer sur un événement affichera une carte et le point de téléport le plus proche.</p>
             </div>
         </div>
 
@@ -89,6 +126,9 @@
                 </div>
             </div>
         </div>
+
+
+
     </div>
 </div>
 
@@ -98,6 +138,7 @@
     var worldId;
     var tabAccueil = $("#accueil_tab");
     var tabEvenements = $("#evenements_tab");
+    var tabNews = $("#news_tab");
     var worldDiv = $('#world');
     var eventsDiv = $('#events');
     var mapsDiv = $("#maps");
@@ -112,6 +153,12 @@
         e.preventDefault();
         $(this).tab('show');
     });
+
+    tabNews.find("a").click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+
 
     worldDiv.change( function() {
         mapsDiv.empty();
