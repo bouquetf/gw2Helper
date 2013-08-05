@@ -181,6 +181,11 @@
             $.getJSON(maps, function(mapList) {
                 mapsDiv.append(new Option(" ", '0'));
                 $.each(mapList, function(line, map) {
+
+                    mapList.sort(function(a,b) {
+                        return (a['name'] > b['name']);
+                    });
+
                     mapsDiv.append(new Option(map['name'], map['id']));
                 })
             })
@@ -241,6 +246,10 @@
     });
 
     $.getJSON(worlds, function(worldList) {
+        worldList.sort(function(a, b) {
+            return (a['name'] > b['name']);
+        });
+        console.sort(worldList);
         worldDiv.append(new Option(" ", '0'));
         $.each(worldList, function(line, world) {
             worldDiv.append(new Option(world['name'], world['id']));
