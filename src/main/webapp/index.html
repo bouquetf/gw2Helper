@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
-
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/css/bootstrap.min.css">
 </head>
 <body>
 
@@ -75,7 +75,8 @@
         e.preventDefault();
         $.ajax({
             url: "pages/accueil.html",
-            dataType: "html"
+            dataType: "html",
+            cache: false
         }).done(function(html) {
                     $('#accueil').html(html);
                 });
@@ -86,7 +87,8 @@
         e.preventDefault();
         $.ajax({
             url: "pages/evenements.html",
-            dataType: "html"
+            dataType: "html",
+            cache: false
         }).done(function(html) {
                     $('#evenements').html(html);
                 });
@@ -98,7 +100,8 @@
         e.preventDefault();
         $.ajax({
             url: "pages/news.html",
-            dataType: "html"
+            dataType: "html",
+            cache: false
         }).done(function(html) {
                     $('#news').html(html);
         });
