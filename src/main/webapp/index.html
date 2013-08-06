@@ -9,17 +9,6 @@
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0-rc1/js/bootstrap.min.js"></script>
-
-    <script type="text/javascript">
-        var lang = "&lang=fr";
-        var base_url = "https://api.guildwars2.com/v1/";
-        var worldsjson = "world_names.json";
-        var mapsjson = "map_names.json";
-        var eventsjson = "events.json";
-        var eventsnamesjson = "event_names.json";
-        var eventNames = {};
-        var chestStatus = "off";
-    </script>
 </head>
 <body>
 
@@ -67,193 +56,55 @@
         </div>
 
         <div id="evenements" class="content tab-pane fade">
-            <h3>Prochains événement sur ma carte</h3>
-            <div class="row">
-                <div class="col-lg-9">
-                    <div class="input-group" >
-                        <label for="world"></label>
-                        <select id="world" class="form-control"></select>
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">Serveur</button>
-                        </span>
-                    </div>
-                    <div class="input-group" >
-                        <label for="maps"></label>
-                        <select id="maps" class="form-control"></select>
-                          <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">&nbsp;&nbsp;Carte&nbsp;&nbsp;</button>
-                        </span>
-                    </div>
-                </div>
-                <div class="col-lg-2">
-                    <button class="btn btn-default btn-block btn-large" onclick="refreshEvents()">Refresh</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-9">
-                    <table class="table" id="events">
-                    </table>
-                </div>
-            </div>
+
         </div>
 
         <div id="news" class="content tab-pane fade">
-            <h3>Quoi de neuf ?</h3>
-            <div class="panel">
-                <div class="panel-heading">
-                    2013-08-04 ~~ <strong>Les premiers TPs</strong>
-                </div>
-                <p>Les premiers emplacements d'événements ont été intégrés. A présent, vous pourrez
-                    découvrir où se trouve le plus proche téléport des évéments de la Vallée de la
-                    reine</p>
-                <p>Lorsque vous cherchez un événement, clickez simplement sur son nom pour afficher son emplacement.
-                    Une fenêtre s'ouvrira alors avec une photo de la zone et le TP entouré.</p>
-            </div>
 
-            <div class="panel">
-                <div class="panel-heading">
-                    2013-08-02 ~~ <strong>Tout commence</strong>
-                </div>
-                <p>Profitons de ce début août pour mettre en ligne ce site utilitaire qui nous a été bien utile
-                    pour chasser les événements et finir la dernière histoire vivante. Les premières
-                    fonctionnalités permettent de chercher les événements qui correspondent à une zone donnée.</p>
-                <p>Pour ce faire, choisissez simplement le serveur sur lequel vous jouez et la carte qui vous
-                    intéresse. Les différents évènements actifs ou en cours de préparation s'afficheront alors.</p>
-                <p>D'ici peu, cliquer sur un événement affichera une carte et le point de téléport le plus proche.</p>
-            </div>
         </div>
-
-        <div class="modal fade" id="tp_modal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title" id="eventLocation">Emplacement</h4>
-                    </div>
-                    <div class="modal-body">
-                        <img id="tp" src="images/GW2_Logo.jpg" width="100%" />
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
 
     </div>
 </div>
 
 <script>
-    var eventsNames = base_url + eventsnamesjson + "?" + lang;
-    var worlds = base_url + worldsjson + "?" + lang;
-    var worldId;
     var tabAccueil = $("#accueil_tab");
     var tabEvenements = $("#evenements_tab");
     var tabNews = $("#news_tab");
-    var worldDiv = $('#world');
-    var eventsDiv = $('#events');
-    var mapsDiv = $("#maps");
-    var chestDiv = $("#chest");
 
     tabAccueil.find("a").click(function (e) {
         e.preventDefault();
+        $.ajax({
+            url: "pages/accueil.html",
+            dataType: "html"
+        }).done(function(html) {
+                    $('#accueil').html(html);
+                });
         $(this).tab('show');
     });
 
     tabEvenements.find("a").click(function (e) {
         e.preventDefault();
+        $.ajax({
+            url: "pages/evenements.html",
+            dataType: "html"
+        }).done(function(html) {
+                    $('#evenements').html(html);
+                });
+
         $(this).tab('show');
     });
 
     tabNews.find("a").click(function (e) {
         e.preventDefault();
-        $(this).tab('show');
-    });
-
-
-    worldDiv.change( function() {
-        mapsDiv.empty();
-        eventsDiv.empty();
-
-        worldId = worldDiv.val();
-        if (worldId != 0) {
-            var maps = base_url + mapsjson + "?world_id=" + worldId + lang;
-
-            $.getJSON(maps, function(mapList) {
-                mapsDiv.append(new Option(" ", '0'));
-                $.each(mapList, function(line, map) {
-
-                    mapList.sort(function(a,b) {
-                        return (a['name'] > b['name']);
-                    });
-
-                    mapsDiv.append(new Option(map['name'], map['id']));
-                })
-            })
-        }
-    });
-
-    mapsDiv.change( function() {
-        refreshEvents();
-    });
-
-
-    function refreshEvents() {
-        var mapId = mapsDiv.val();
-        var events = base_url + eventsjson + "?" + "world_id=" + worldId + "&map_id="+mapId + lang;
-
-        eventsDiv.empty();
-        $.getJSON(events, function(eventList) {
-            var cmp = 0;
-            $.each(eventList["events"], function(line, event) {
-                var state = event["state"];
-                if ($.inArray(state, ['Preparation', 'Warmup', 'Active']) > -1) {
-                    var color;
-                    if (cmp%2 == 0) {
-                        color = "lightblue";
-                    } else {
-                        color = "lightpink";
-                    }
-                    var event_id = event["event_id"];
-                    $('#events').append("<tr style='background-color: "+color+"'><td>" +
-                            "<a onclick='updatePicture(this.id)' data-toggle='modal'  href='#tp_modal' id='"+ event_id+"'>" +
-                            eventNames[event_id]+"</a></td><td>"+ state+"</td></tr>");
-                    cmp+=1;
-                }
-            })
-        })
-    }
-
-    function updatePicture(id) {
+        console.log("test");
         $.ajax({
-            url:'tps/'+id+'.jpg',
-            type:'HEAD',
-            error: function() {
-                $('#eventLocation').text(eventNames[id]);
-                $('#tp').attr('src',"images/GW2_Logo.jpg");
-            },
-            success: function()
-            {
-                $('#eventLocation').text(eventNames[id]);
-                $('#tp').attr('src','tps/'+id+'.jpg');
-            }
+            url: "pages/news.html",
+            dataType: "html"
+        }).done(function(html) {
+                    $('#news').html(html);
         });
-    }
 
-    $.getJSON(eventsNames, function (nameList) {
-        $.each(nameList, function (line, name) {
-            eventNames[name["id"]] = name["name"];
-        })
-    });
-
-    $.getJSON(worlds, function(worldList) {
-        worldList.sort(function(a, b) {
-            return (a['name'] > b['name']);
-        });
-        console.sort(worldList);
-        worldDiv.append(new Option(" ", '0'));
-        $.each(worldList, function(line, world) {
-            worldDiv.append(new Option(world['name'], world['id']));
-        })
+        $(this).tab('show');
     });
 </script>
 
