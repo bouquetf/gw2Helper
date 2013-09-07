@@ -1,4 +1,6 @@
-<h3>Prochains événement sur ma carte</h3>
+<h3>Evénements à coffre</h3>
+
+
 <div class="row">
     <div class="col-lg-9">
         <div class="input-group" >
@@ -8,18 +10,13 @@
                             <button class="btn btn-default" type="button">Serveur</button>
                         </span>
         </div>
-        <div class="input-group" >
-            <label for="maps"></label>
-            <select id="maps" class="form-control"></select>
-                          <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">&nbsp;&nbsp;Carte&nbsp;&nbsp;</button>
-                        </span>
-        </div>
     </div>
+
     <div class="col-lg-2">
         <button class="btn btn-default btn-block btn-large" onclick="refreshEvents()">Refresh</button>
     </div>
 </div>
+
 <div class="row">
     <div class="col-lg-9">
         <table class="table" id="events">
@@ -42,28 +39,22 @@
 </div>
 
 <script>
-    var base_url = "https://api.guildwars2.com/v1";
-    var mapsjson = "map_names.json";
-    var eventsjson = "events.json";
     var eventNames = {};
     var mapNames = {};
-    var chestStatus = "off";
+    var chestEvents = [];
 
-    var eventsNames = base_url + "/event_names.json?lang=fr";
-    var worlds = "https://api.guildwars2.com/v1/world_names.json?lang=fr";
+    var base_url = "https://api.guildwars2.com/v1";
+
+    var eventNamesUrl = base_url + "/event_names.json?lang=fr";
     var mapNamesUrl = base_url + "/map_names.json?lang=fr";
+    var worldNamesUrl = base_url + "/world_names.json?lang=fr";
+    var chestEventsUrl = "file:///home/bouquetf/projects/gw2Helper/src/main/webapp/json/chest.json"
+
 
     var worldId;
     var worldDiv = $('#world');
     var eventsDiv = $('#events');
     var mapsDiv = $("#maps");
-    var chestDiv = $("#chest");
-
-    $.getJSON(mapNamesUrl, function (nameList) {
-        $.each(nameList, function (line, name) {
-            mapNames[name["id"]] = name["name"];
-        })
-    });
 
     worldDiv.change( function() {
         mapsDiv.empty();
@@ -71,21 +62,8 @@
 
         worldId = worldDiv.val();
         if (worldId != 0) {
-            var maps = base_url + "/map_names.json?world_id=" + worldId + "&lang=fr";
-            $.getJSON(maps, function(mapList) {
-                var sortedList = mapList.sort(function(a,b) {
-                    return (a['name'] > b['name']);
-                });
-                mapsDiv.append(new Option(" ", '0'));
-                $.each(sortedList, function(line, map) {
-                    mapsDiv.append(new Option(map['name'], map['id']));
-                })
-            })
+            refreshEvents();
         }
-    });
-
-    mapsDiv.change( function() {
-        refreshEvents();
     });
 
     function updatePicture(id) {
@@ -104,13 +82,25 @@
         });
     }
 
-    $.getJSON(eventsNames, function (nameList) {
+    $.getJSON(eventNamesUrl, function (nameList) {
         $.each(nameList, function (line, name) {
             eventNames[name["id"]] = name["name"];
         })
     });
 
-    $.getJSON(worlds, function(worldList) {
+    $.getJSON(mapNamesUrl, function (nameList) {
+        $.each(nameList, function (line, name) {
+            mapNames[name["id"]] = name["name"];
+        })
+    });
+
+    $.getJSON(chestEventsUrl, function(eventList) {
+        eventList.forEach(function (event) {
+            chestEvents.push(event["id"]);
+        });
+    });
+
+    $.getJSON(worldNamesUrl, function(worldList) {
         var sortedList = worldList.sort(function(a, b) {
             return (a['name'] > b['name']);
         });
@@ -121,16 +111,14 @@
     });
 
     function refreshEvents() {
-        var mapId = mapsDiv.val();
-        var events = base_url + "/events.json?world_id=" + worldId + "&map_id="+mapId+"&lang=fr";
+        var events = base_url + "/events.json?world_id=" + worldId +"&lang=fr";
 
         eventsDiv.empty();
         $.getJSON(events, function(eventList) {
             var cmp = 0;
             $.each(eventList["events"], function(line, event) {
                 var state = event["state"];
-                var map = mapNames[event["map_id"]];
-                if ($.inArray(state, ['Preparation', 'Active']) > -1) {
+                if (($.inArray(state, ['Active']) > -1) && ($.inArray(event["event_id"], chestEvents) > -1)) {
                     var color;
                     if (cmp%2 == 0) {
                         color = "lightblue";
@@ -140,7 +128,7 @@
                     var event_id = event["event_id"];
                     eventsDiv.append("<tr style='background-color: "+color+"'><td>" +
                             "<a onclick='updatePicture(this.id)' data-toggle='modal'  href='#tp_modal' id='"+ event_id+"'>" +
-                            eventNames[event_id]+"</a></td><td>"+ state +"</td><td>" + map + "</td></tr>");
+                            eventNames[event_id]+"</a></td><td>"+ mapNames[event['map_id']]+"</td></tr>");
                     cmp+=1;
                 }
             })

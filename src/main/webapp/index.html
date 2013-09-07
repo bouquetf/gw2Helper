@@ -18,6 +18,7 @@
     <ul class="nav nav-tabs">
         <li id="accueil_tab" class="active"><a href="#accueil" data-toggle="tab">Accueil</a></li>
         <li id="evenements_tab"><a href="#evenements" data-toggle="tab">Événements</a></li>
+        <li id="chest_tab"><a href="#chest" data-toggle="tab">Coffres</a></li>
         <li id="news_tab"><a href="#news" data-toggle="tab">News</a></li>
     </ul>
 
@@ -59,6 +60,10 @@
 
         </div>
 
+        <div id="chest" class="content tab-pane fade">
+
+        </div>
+
         <div id="news" class="content tab-pane fade">
 
         </div>
@@ -70,6 +75,7 @@
     var tabAccueil = $("#accueil_tab");
     var tabEvenements = $("#evenements_tab");
     var tabNews = $("#news_tab");
+    var tabChest = $("#chest_tab");
 
     tabAccueil.find("a").click(function (e) {
         e.preventDefault();
@@ -91,6 +97,19 @@
             cache: false
         }).done(function(html) {
                     $('#evenements').html(html);
+                });
+
+        $(this).tab('show');
+    });
+
+    tabChest.find("a").click(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: "pages/chest.html",
+            dataType: "html",
+            cache: false
+        }).done(function(html) {
+                    $('#chest').html(html);
                 });
 
         $(this).tab('show');

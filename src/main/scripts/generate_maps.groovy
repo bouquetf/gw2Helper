@@ -1,6 +1,4 @@
-#! env groovy
-
-
+#! /usr/bin/env groovy
 
 if (args.length != 1) {
     println """Usage :
